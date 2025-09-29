@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 export const runtime = "nodejs";
-
 export async function GET() {
-  return NextResponse.json({ ok: true, service: "auth-101" });
+  return NextResponse.json({ ok: true, service: "proje-adi" });
 }
