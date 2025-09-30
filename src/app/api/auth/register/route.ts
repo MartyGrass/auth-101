@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '../../../../lib/prisma';
 import bcrypt from 'bcryptjs';
-import { z } from 'zod';
+import { z, ZodError } from 'zod';
 
 export const runtime = 'nodejs';
 
@@ -28,8 +28,11 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ ok: true, user }, { status: 201 });
-  } catch (err: any) {
-    const message = err?.issues?.[0]?.message ?? 'Unexpected error';
-    return NextResponse.json({ ok: false, error: message }, { status: 400 });
+  } catch (err: unknown) {
+    if (err instanceof ZodError) {
+      const message = err.issues[0]?.message ?? 'Invalid input';
+      return NextResponse.json({ ok: false, error: message }, { status: 400 });
+    }
+    return NextResponse.json({ ok: false, error: 'Unexpected error' }, { status: 500 });
   }
 }
